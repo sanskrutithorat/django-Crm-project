@@ -1,0 +1,14 @@
+ pip install django python-dotenv     
+ mkdir django-solutions    
+ cd \django-solutions
+ python -m venv venv   
+  source venv/bin/activate 
+   django-admin startproject settings .
+   python manage.py runserver 8080 
+
+
+   swagger is done 
+   s
+
+
+
