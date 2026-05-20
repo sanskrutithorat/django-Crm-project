@@ -1,14 +1,25 @@
- pip install django python-dotenv     
+   
  mkdir django-solutions    
- cd \django-solutions
+  cd  djangoSolutions
  python -m venv venv   
-  source venv/bin/activate 
+  source venv/bin/activate
+  deactivate
    django-admin startproject settings .
+   \work\django-personal-project> 
    python manage.py runserver 8080 
-
-
    swagger is done 
    s
 
 
 
+Do this to run 
+ cd to djmago-personal-project-CRM
+
+.\venv\Scripts\Activate.ps1
+python manage.py runserver 127.0.0.1:8083
+
+
+
+
+admin@trellissoft.ai 
+Pass@123
