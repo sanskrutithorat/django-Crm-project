@@ -1,27 +1,3 @@
-how to run 
-
-Do this to run 
- cd to djmago-personal-project-CRM
-
-.\venv\Scripts\Activate.ps1
-python manage.py runserver 127.0.0.1:8083
-
-
-
-love@gmail.com
-lov - username
-India@123 - pass
-
-
-
-
-
-
-
-
-
-
-
 # Complete CRM API Documentation (For Frontend Developers)
 
 This document provides everything the frontend team needs to build the UI, including authentication flows, API endpoints, JSON payloads, and the Role-Based Access Control (RBAC) rules.
@@ -203,4 +179,3 @@ The UI should dynamically hide/show buttons (like "Delete" or "Create") based on
     "role": 3 // ID of the Role (1=Admin, 2=Manager, 3=Employee, 4=Viewer)
 }
 ```
-

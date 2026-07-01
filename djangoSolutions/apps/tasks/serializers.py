@@ -1,14 +1,7 @@
 from rest_framework import serializers
 from .models import Task
-from djangoSolutions.apps.projects.models import Project
-from djangoSolutions.apps.accounts.models import CustomUser
 
 class TaskSerializer(serializers.ModelSerializer):
-    project_name = serializers.CharField(source="project.name", read_only=True)
-    assigned_to_email = serializers.CharField(source="assigned_to.email", read_only=True)
-    created_by_email = serializers.CharField(source="created_by.email", read_only=True)
-    organization_name = serializers.CharField(source="organization.name", read_only=True)
-
     class Meta:
         model = Task
         fields = [
@@ -18,14 +11,35 @@ class TaskSerializer(serializers.ModelSerializer):
             "status",
             "due_date",
             "project",
-            "project_name",
             "assigned_to",
-            "assigned_to_email",
             "created_by",
-            "created_by_email",
             "organization",
-            "organization_name",
             "created_at",
             "updated_at",
         ]
         read_only_fields = ["organization", "created_by"]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if instance.project:
+            rep['project'] = {
+                'id': instance.project.id,
+                'name': instance.project.name
+            }
+        if instance.assigned_to:
+            rep['assigned_to'] = {
+                'id': instance.assigned_to.id,
+                'email': instance.assigned_to.email,
+                'username': instance.assigned_to.username
+            }
+        if instance.created_by:
+            rep['created_by'] = {
+                'id': instance.created_by.id,
+                'email': instance.created_by.email
+            }
+        if instance.organization:
+            rep['organization'] = {
+                'id': instance.organization.id,
+                'name': instance.organization.name
+            }
+        return rep

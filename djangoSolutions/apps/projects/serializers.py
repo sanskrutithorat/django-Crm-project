@@ -1,15 +1,8 @@
 from rest_framework import serializers
 from .models import Project
-from djangoSolutions.apps.customers.models import Customer  # safe if path resolves; adjust import if needed
-
-
+from djangoSolutions.apps.customers.models import Customer
 
 class ProjectSerializer(serializers.ModelSerializer):
-    # extra display fields
-    customer_name = serializers.CharField(source="customer.name", read_only=True)
-    organization_name = serializers.CharField(source="organization.name", read_only=True)
-    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
-
     class Meta:
         model = Project
         fields = [
@@ -21,11 +14,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "start_date",
             "end_date",
             "customer",
-            "customer_name",
             "organization",
-            "organization_name",
             "created_by",
-            "created_by_username",
             "created_at",
             "updated_at"
         ]
@@ -42,3 +32,23 @@ class ProjectSerializer(serializers.ModelSerializer):
             if value.organization != user_org:
                 raise serializers.ValidationError("That customer does not belong to your organization.")
         return value
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        if instance.customer:
+            rep['customer'] = {
+                'id': instance.customer.id,
+                'name': instance.customer.name,
+                'email': instance.customer.email
+            }
+        if instance.organization:
+            rep['organization'] = {
+                'id': instance.organization.id,
+                'name': instance.organization.name
+            }
+        if instance.created_by:
+            rep['created_by'] = {
+                'id': instance.created_by.id,
+                'email': instance.created_by.email
+            }
+        return rep

@@ -59,7 +59,33 @@ class LoginApiView(TokenObtainPairView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        user = serializer.user
+        from djangoSolutions.apps.roles.permissions import get_user_role
+        from djangoSolutions.apps.roles.models import OrganizationUser
+        role = get_user_role(user)
+
+        org_name = None
+        if user.organization:
+            org_name = user.organization.name
+        else:
+            org_user = OrganizationUser.objects.filter(user=user).first()
+            if org_user and org_user.organization:
+                org_name = org_user.organization.name
+
+        response_data = serializer.validated_data
+        response_data['user'] = {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "organization": org_name,
+            "role": role,
+            "is_active": user.is_active,
+            "address": user.address,
+            "contact_number": user.contact_number,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 # --------------------------------------------------------------------
@@ -123,6 +149,36 @@ class LogoutApiView(APIView):
             return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
 
 # --------------------------------------------------------------------
+# Register View
+# --------------------------------------------------------------------
+from rest_framework.permissions import AllowAny
+from djangoSolutions.apps.accounts.serializers import RegisterSerializer
+
+class RegisterApiView(APIView):
+    """
+    Registers a new user in the system.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    @swagger_auto_schema(
+        request_body=RegisterSerializer,
+        responses={201: openapi.Response("User created")}
+    )
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "User registered successfully", "user": serializer.data},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {"error": "Registration failed", "details": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+# --------------------------------------------------------------------
 # Profile View
 # -------------------------------------------------------------------- 
 User = get_user_model()
@@ -136,14 +192,30 @@ class ProfileApiView(APIView):
 
     def get(self, request):
         user = request.user
+        from djangoSolutions.apps.roles.permissions import get_user_role
+        from djangoSolutions.apps.roles.models import OrganizationUser
+        role = get_user_role(user)
+
+        org_name = None
+        if user.organization:
+            org_name = user.organization.name
+        else:
+            org_user = OrganizationUser.objects.filter(user=user).first()
+            if org_user and org_user.organization:
+                org_name = org_user.organization.name
+
         return Response({
             "id": user.id,
             "email": user.email,
             "username": user.username,
-            "organization": user.organization.name if user.organization else None,
+            "organization": org_name,
+            "role": role,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "is_staff": user.is_staff,
+            "is_active": user.is_active,
+            "address": user.address,
+            "contact_number": user.contact_number,
         }, status=status.HTTP_200_OK)
 
 # # djangoSolutions/apps/accounts/view/auth_view.py

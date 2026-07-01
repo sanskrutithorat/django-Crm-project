@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',  
     'drf_yasg',
     'corsheaders',
+    'django_filters',
     # Local apps
    'djangoSolutions.apps.accounts',
    'djangoSolutions.apps.customers',
@@ -159,7 +160,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # You can also add permissions here later if you want
+    'DEFAULT_RENDERER_CLASSES': (
+        'djangoSolutions.apps.base.renderers.CustomJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'EXCEPTION_HANDLER': 'djangoSolutions.apps.base.exceptions.custom_exception_handler',
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 30,
 }
 
 

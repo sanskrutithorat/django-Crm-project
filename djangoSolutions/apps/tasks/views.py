@@ -8,72 +8,24 @@ from .serializers import TaskSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    from djangoSolutions.apps.roles.permissions import TaskAccessPermission
+    permission_classes = [IsAuthenticated, TaskAccessPermission]
     authentication_classes = [JWTAuthentication]
 
+    filterset_fields = ['status', 'project', 'assigned_to']
+    search_fields = ['title', 'description']
+    ordering_fields = ['due_date', 'created_at']
+
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False) or getattr(self.request.user, 'is_anonymous', True):
+            return Task.objects.none()
+        
         return Task.objects.filter(
-            organization=self.request.user.organization
+            organization=self.request.user.get_organization()
         ).select_related("project", "assigned_to", "created_by")
 
     def perform_create(self, serializer):
         serializer.save(
-            organization=self.request.user.organization,
+            organization=self.request.user.get_organization(),
             created_by=self.request.user,
         )
-
-    # CREATE
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, context={"request": request})
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response({
-            "success": True,
-            "message": "Task created successfully.",
-            "data": serializer.data
-        }, status=status.HTTP_201_CREATED)
-
-    # UPDATE
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial, context={"request": request})
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response({
-            "success": True,
-            "message": "Task updated successfully.",
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
-
-    def partial_update(self, request, *args, **kwargs):
-        kwargs["partial"] = True
-        return self.update(request, *args, **kwargs)
-
-    # DELETE
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({
-            "success": True,
-            "message": "Task deleted successfully."
-        }, status=status.HTTP_200_OK)
-
-    # LIST
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={"request": request})
-        return Response({
-            "success": True,
-            "count": len(serializer.data),
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)
-
-    # RETRIEVE
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, context={"request": request})
-        return Response({
-            "success": True,
-            "data": serializer.data
-        }, status=status.HTTP_200_OK)

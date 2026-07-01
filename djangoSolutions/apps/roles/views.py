@@ -26,7 +26,8 @@ class RoleDetailView(generics.RetrieveUpdateDestroyAPIView):
 # ---------------------------
 class AssignRoleView(generics.CreateAPIView):
     serializer_class = OrganizationUserSerializer
-    permission_classes = [IsAuthenticated]
+    from djangoSolutions.apps.roles.permissions import RoleAssignmentPermission
+    permission_classes = [IsAuthenticated, RoleAssignmentPermission]
 
     def create(self, request, *args, **kwargs):
         user_id = request.data.get("user")
