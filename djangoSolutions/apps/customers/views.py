@@ -20,7 +20,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, CustomerAccessPermission]
     authentication_classes = [JWTAuthentication]
 
-    filterset_fields = ['organization', 'projects']
+    filterset_fields = {
+        'company_name': ['icontains'],
+        'projects': ['exact'],
+    }
     search_fields = ['name', 'email', 'company_name']
     ordering_fields = ['created_at', 'name']
 

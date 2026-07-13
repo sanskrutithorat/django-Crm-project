@@ -108,7 +108,7 @@ The UI should dynamically hide/show buttons (like "Delete" or "Create") based on
 ## 4. Core Entities
 
 ### Customers
-- **List:** `GET /api/customers/` *(Supports filtering: `?organization=X&projects=Y`, searching: `?search=name`)*
+- **List:** `GET /api/customers/` *(Supports filtering: `?company_name=X&projects=Y`, searching: `?search=name`)*
 - **Detail:** `GET /api/customers/{id}/`
 - **Create:** `POST /api/customers/`
 - **Update:** `PATCH /api/customers/{id}/`
