@@ -204,3 +204,40 @@ The UI should dynamically hide/show buttons (like "Delete" or "Create") based on
 }
 ```
 
+
+
+
+
+
+
+Here is a breakdown of what each role can do in your CRM:
+
+1. Admin
+The highest level of access within your organization.
+
+Roles: Can assign or change roles for other users (only Admins can do this).
+Customers: Can view, create, edit, and delete customers.
+Projects: Can view, create, edit, and delete projects.
+Tasks: Can view, create, edit, and delete tasks.
+2. Manager
+Has full control over the data, but cannot manage user roles.
+
+Roles: Cannot assign or change roles.
+Customers: Can view, create, edit, and delete customers.
+Projects: Can view, create, edit, and delete projects.
+Tasks: Can view, create, edit, and delete tasks.
+3. Employee
+Focused on day-to-day work (tasks) without administrative privileges.
+
+Roles: Cannot assign or change roles.
+Customers: Can only view. Cannot create, edit, or delete.
+Projects: Can only view. Cannot create, edit, or delete.
+Tasks: Can view, create, and edit tasks. However, they cannot delete tasks.
+4. Viewer (or any user without a specific higher role)
+Strictly read-only access.
+
+Roles: Cannot assign or change roles.
+Customers: Can only view.
+Projects: Can only view.
+Tasks: Can only view.
+
