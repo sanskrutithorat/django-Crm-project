@@ -6,10 +6,13 @@ User = get_user_model()
 
 
 class Role(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="roles", null=True, blank=True)
+    permissions = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["id"]
+        unique_together = ("name", "organization")
 
     def __str__(self):
         return self.name

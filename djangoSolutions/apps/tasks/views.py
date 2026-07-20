@@ -10,6 +10,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     from djangoSolutions.apps.roles.permissions import TaskAccessPermission
     permission_classes = [IsAuthenticated, TaskAccessPermission]
+
     authentication_classes = [JWTAuthentication]
 
     filterset_fields = ['status', 'project', 'assigned_to']
@@ -19,10 +20,15 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False) or getattr(self.request.user, 'is_anonymous', True):
             return Task.objects.none()
-        
+            
+        if self.request.user.is_superuser:
+            return Task.objects.all().select_related(
+                'project', 'assigned_to', 'organization', 'created_by'
+            )
+            
         return Task.objects.filter(
             organization=self.request.user.get_organization()
-        ).select_related("project", "assigned_to", "created_by")
+        ).select_related('project', 'assigned_to', 'organization', 'created_by')
 
     def perform_create(self, serializer):
         serializer.save(

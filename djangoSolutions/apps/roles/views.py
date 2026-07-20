@@ -9,16 +9,37 @@ from .serializers import RoleSerializer, OrganizationUserSerializer
 # ---------------------------
 # ROLE CRUD
 # ---------------------------
-class RoleListCreateView(generics.ListCreateAPIView):
-    queryset = Role.objects.all()
-    serializer_class = RoleSerializer
-    permission_classes = [IsAuthenticated]
+from djangoSolutions.apps.roles.permissions import RoleAssignmentPermission
 
+class RoleListCreateView(generics.ListCreateAPIView):
+    serializer_class = RoleSerializer
+    permission_classes = [IsAuthenticated, RoleAssignmentPermission]
+    
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False) or getattr(self.request.user, 'is_anonymous', True):
+            return Role.objects.none()
+            
+        if self.request.user.is_superuser:
+            return Role.objects.all()
+            
+        # Only return roles for the user's organization
+        return Role.objects.filter(organization=self.request.user.get_organization())
+
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.get_organization())
 
 class RoleDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, RoleAssignmentPermission]
+    
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False) or getattr(self.request.user, 'is_anonymous', True):
+            return Role.objects.none()
+            
+        if self.request.user.is_superuser:
+            return Role.objects.all()
+            
+        return Role.objects.filter(organization=self.request.user.get_organization())
 
 
 # ---------------------------

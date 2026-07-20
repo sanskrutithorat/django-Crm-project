@@ -33,6 +33,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False) or getattr(self.request.user, 'is_anonymous', True):
             return Customer.objects.none()
+        if self.request.user.is_superuser:
+            return Customer.objects.all().select_related('organization', 'created_by')
         return Customer.objects.filter(
             organization=self.request.user.get_organization()
         ).select_related('organization', 'created_by')
