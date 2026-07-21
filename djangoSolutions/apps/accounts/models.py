@@ -1,7 +1,9 @@
-from django.db import models
+﻿from django.db import models
 from django.contrib.auth.models import AbstractUser
+import uuid
 
 class Organization(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     domain = models.CharField(max_length=100, unique=True, null=True, blank=True)
 
@@ -15,6 +17,7 @@ class Organization(models.Model):
 
 
 class CustomUser(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, null=True, blank=True, related_name="users"
     )

@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 import uuid
 from djangoSolutions.apps.base.models import ModelAbstractBase
 

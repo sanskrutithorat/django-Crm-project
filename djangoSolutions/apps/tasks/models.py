@@ -1,8 +1,10 @@
-from django.db import models
+﻿from django.db import models
+import uuid
 from djangoSolutions.apps.accounts.models import CustomUser, Organization
 from djangoSolutions.apps.projects.models import Project
 
 class Task(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     STATUS_CHOICES = [
         ("todo", "To Do"),
         ("in_progress", "In Progress"),

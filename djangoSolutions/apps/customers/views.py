@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions
+﻿from rest_framework import viewsets, permissions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Customer
 from .serializers import CustomerSerializer

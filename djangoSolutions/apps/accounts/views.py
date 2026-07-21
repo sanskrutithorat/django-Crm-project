@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, generics
+﻿from rest_framework import viewsets, permissions, generics
 from .models import Organization, CustomUser
 from .serializers import OrganizationSerializer, CustomUserSerializer
 from django.db import models
@@ -47,7 +47,17 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         return CustomUser.objects.filter(id=user.id)
 
     def perform_create(self, serializer):
-        user = serializer.save(organization=self.request.user.get_organization())
+        user_org = self.request.user.get_organization()
+        org = None
+        if self.request.user.is_superuser:
+            org_id = self.request.data.get('organization_id')
+            if org_id:
+                from .models import Organization
+                org = Organization.objects.filter(id=org_id).first()
+        if not org:
+            org = user_org
+
+        user = serializer.save(organization=org)
         password = self.request.data.get('password', 'Pass@123')
         user.set_password(password)
         user.save()
@@ -58,7 +68,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             OrganizationUser.objects.create(user=user, organization=user.organization, role_id=role_id)
 
     def perform_update(self, serializer):
-        user = serializer.save()
+        org = None
+        if self.request.user.is_superuser:
+            org_id = self.request.data.get('organization_id')
+            if org_id:
+                from .models import Organization
+                org = Organization.objects.filter(id=org_id).first()
+        
+        if org:
+            old_org = serializer.instance.organization
+            user = serializer.save(organization=org)
+            if old_org and old_org != org:
+                from djangoSolutions.apps.roles.models import OrganizationUser
+                OrganizationUser.objects.filter(user=user, organization=old_org).delete()
+        else:
+            user = serializer.save()
         
         password = self.request.data.get('password')
         if password and password.strip():
@@ -68,9 +92,17 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         role_id = self.request.data.get('role_id')
         if role_id:
             from djangoSolutions.apps.roles.models import OrganizationUser
-            org_user, created = OrganizationUser.objects.get_or_create(user=user, organization=user.organization)
-            org_user.role_id = role_id
-            org_user.save()
+            org_user, created = OrganizationUser.objects.get_or_create(
+                user=user, 
+                organization=user.organization,
+                defaults={'role_id': role_id}
+            )
+            if not created:
+                org_user.role_id = role_id
+                org_user.save()
+            
+            # Unconditionally clean up any stale organization memberships
+            OrganizationUser.objects.filter(user=user).exclude(organization=user.organization).delete()
 
 class SuperadminListView(generics.ListAPIView):
     """

@@ -1,4 +1,4 @@
-from django.urls import path, include
+﻿from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from djangoSolutions.apps.accounts.views import OrganizationViewSet, CustomUserViewSet, SuperadminListView
 from djangoSolutions.apps.accounts.view.auth_views import LoginApiView, RefreshTokenApiView, ProfileApiView, LogoutApiView, RegisterApiView

@@ -1,4 +1,4 @@
-from rest_framework import serializers
+﻿from rest_framework import serializers
 from .models import Role, OrganizationUser
 from django.contrib.auth import get_user_model
 from djangoSolutions.apps.accounts.models import Organization
@@ -9,7 +9,7 @@ User = get_user_model()
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = ["id", "name"]
+        fields = ["id", "name", "permissions"]
 
 
 class OrganizationUserSerializer(serializers.ModelSerializer):

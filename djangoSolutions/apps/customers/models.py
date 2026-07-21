@@ -1,11 +1,13 @@
-from django.db import models
+﻿from django.db import models
 from django.conf import settings
+import uuid
 from djangoSolutions.apps.accounts.models import Organization  
 
 class Customer(models.Model):
     """
     Stores customer info, linked to an organization and user.
     """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)

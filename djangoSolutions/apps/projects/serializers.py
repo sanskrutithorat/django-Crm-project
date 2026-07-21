@@ -1,4 +1,4 @@
-from rest_framework import serializers
+﻿from rest_framework import serializers
 from .models import Project
 from djangoSolutions.apps.customers.models import Customer
 

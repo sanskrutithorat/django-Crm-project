@@ -1,4 +1,4 @@
-from rest_framework import serializers
+﻿from rest_framework import serializers
 from .models import Organization, CustomUser
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -8,11 +8,12 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
 class CustomUserSerializer(serializers.ModelSerializer):
     organization = OrganizationSerializer(read_only=True)
+    organization_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     role = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'organization', 'is_staff', 'is_active', 'address', 'contact_number', 'role']
+        fields = ['id', 'email', 'username', 'organization', 'organization_id', 'is_staff', 'is_superuser', 'is_active', 'address', 'contact_number', 'role']
 
     def get_role(self, obj):
         from djangoSolutions.apps.roles.models import OrganizationUser

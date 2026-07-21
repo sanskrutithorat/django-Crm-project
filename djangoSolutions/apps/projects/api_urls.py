@@ -1,4 +1,4 @@
-from rest_framework.routers import DefaultRouter
+﻿from rest_framework.routers import DefaultRouter
 from djangoSolutions.apps.projects.views import ProjectViewSet
 
 router = DefaultRouter()
