@@ -1,4 +1,4 @@
-﻿from rest_framework import serializers
+from rest_framework import serializers
 from .models import Organization, CustomUser
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -16,6 +16,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'username', 'organization', 'organization_id', 'is_staff', 'is_superuser', 'is_active', 'address', 'contact_number', 'role']
 
     def get_role(self, obj):
+        if obj.is_superuser:
+            return "Super Admin"
+            
         from djangoSolutions.apps.roles.models import OrganizationUser
         if obj.organization:
             org_user = OrganizationUser.objects.filter(user=obj, organization=obj.organization).first()
@@ -23,7 +26,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             org_user = OrganizationUser.objects.filter(user=obj).first()
             
         if org_user and org_user.role:
-            return org_user.role.name.lower()
+            return org_user.role.name
         return None
 
 class RegisterSerializer(serializers.ModelSerializer):

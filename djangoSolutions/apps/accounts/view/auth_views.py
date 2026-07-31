@@ -1,4 +1,4 @@
-﻿from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
 from rest_framework import status
@@ -62,8 +62,12 @@ class LoginApiView(TokenObtainPairView):
         user = serializer.user
         from djangoSolutions.apps.roles.permissions import get_user_role
         from djangoSolutions.apps.roles.models import OrganizationUser
-        role_obj = get_user_role(user)
-        role = role_obj.name.lower() if role_obj else None
+        
+        if user.is_superuser:
+            role = "Super Admin"
+        else:
+            role_obj = get_user_role(user)
+            role = role_obj.name if role_obj else None
 
         org_name = None
         if user.organization:
@@ -195,8 +199,12 @@ class ProfileApiView(APIView):
         user = request.user
         from djangoSolutions.apps.roles.permissions import get_user_role
         from djangoSolutions.apps.roles.models import OrganizationUser
-        role_obj = get_user_role(user)
-        role = role_obj.name.lower() if role_obj else None
+        
+        if user.is_superuser:
+            role = "Super Admin"
+        else:
+            role_obj = get_user_role(user)
+            role = role_obj.name if role_obj else None
 
         org_name = None
         if user.organization:
